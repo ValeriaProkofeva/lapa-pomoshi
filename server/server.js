@@ -4,7 +4,6 @@ import session from 'express-session';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import sequelize from './config/database.js';
-import { securityHeaders, limiter, sessionConfig } from './middleware/security.js';
 import authRoutes from './routes/authRoutes.js';
 import advertisementRoutes from './routes/advertisementRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
