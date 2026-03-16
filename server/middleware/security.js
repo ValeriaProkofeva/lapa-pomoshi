@@ -44,15 +44,15 @@ const sessionStore = new SequelizeStore({
 });
 
 export const sessionConfig = {
-  secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
-  store: sessionStore,
+ secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production', // true в продакшене
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, 
-    sameSite: 'strict'
+    maxAge: 24 * 60 * 60 * 1000, // 24 часа
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // ВАЖНО!
+    domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined
   },
   name: 'sessionId'
 };

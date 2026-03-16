@@ -67,7 +67,9 @@ useEffect(() => {
         limit: 10
       }).toString();
 
-       const response = await fetch(`${API_BASE_URL}/api/advertisements?${queryParams}`);
+      const response = await fetch(`${API_BASE_URL}/api/advertisements?${queryParams}`, {
+        credentials: 'include' 
+      });
       const data = await response.json();
 
       if (response.ok) {
