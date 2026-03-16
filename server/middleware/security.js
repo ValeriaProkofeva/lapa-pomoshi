@@ -7,27 +7,23 @@ import crypto from 'crypto';
 
 const SequelizeStore = SequelizeStoreFactory(session.Store);
 
+// Создаем хранилище сессий
+const sessionStore = new SequelizeStore({
+  db: sequelize
+});
+
 export const securityHeaders = helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: [
-        "'self'", 
-        "https://lapa-pomoshi.onrender.com", 
-        "ws:", 
-        "wss:",
-        "http://localhost:5173" 
-      ],
+      connectSrc: ["'self'", "https://lapa-pomoshi.onrender.com", "ws:", "wss:"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "blob:"],
-      scriptSrc: ["'self'"],
-      frameSrc: ["'self'"],
-      upgradeInsecureRequests: []
+      scriptSrc: ["'self'"]
     }
   },
-  crossOriginEmbedderPolicy: false,
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginEmbedderPolicy: false
 });
 
 export const limiter = rateLimit({
@@ -45,9 +41,8 @@ export const authLimiter = rateLimit({
   skipSuccessfulRequests: true
 });
 
-const sessionStore = new SequelizeStore({
-  db: sequelize
-});
+// ✅ ЭКСПОРТИРУЕМ ВСЕ НУЖНЫЕ КОМПОНЕНТЫ
+export { sessionStore };
 
 export const sessionConfig = {
   secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
@@ -62,5 +57,5 @@ export const sessionConfig = {
     domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined
   },
   name: 'sessionId',
-  proxy: true 
+  proxy: true
 };

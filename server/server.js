@@ -17,6 +17,8 @@ import Advertisement from './models/Advertisement.js';
 import Profile from './models/Profile.js';
 import Volunteer from './models/Volunteer.js';
 import Task from './models/Task.js';
+import { securityHeaders, limiter, sessionConfig, sessionStore } from './middleware/security.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -117,7 +119,7 @@ async function startServer() {
     await sequelize.authenticate();
     console.log('✓ Подключение к базе данных успешно');
     
-    // Синхронизация моделей в правильном порядке
+    // Синхронизация моделей
     await User.sync({ force: false });
     console.log('✓ Таблица users синхронизирована');
     
@@ -133,9 +135,13 @@ async function startServer() {
     await Task.sync({ force: false });
     console.log('✓ Таблица tasks синхронизирована');
     
-    const { sessionStore } = await import('./middleware/security.js');
-    await sessionStore.sync();
-    console.log('✓ Таблица сессий синхронизирована');
+    // ✅ ВАЖНО: синхронизируем таблицу сессий
+    if (sessionStore && typeof sessionStore.sync === 'function') {
+      await sessionStore.sync();
+      console.log('✓ Таблица сессий синхронизирована');
+    } else {
+      console.log('⚠️ sessionStore не имеет метода sync, пропускаем');
+    }
     
     await createAdminUser();
     
@@ -145,6 +151,7 @@ async function startServer() {
     });
   } catch (error) {
     console.error('✗ Ошибка при запуске сервера:', error.message);
+    console.error(error.stack); // Добавим полный стек ошибки
     process.exit(1);
   }
 }
