@@ -4,7 +4,6 @@ import session from 'express-session';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import sequelize from './config/database.js';
-import { securityHeaders, limiter, sessionConfig } from './middleware/security.js';
 import authRoutes from './routes/authRoutes.js';
 import advertisementRoutes from './routes/advertisementRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
@@ -23,7 +22,6 @@ const PORT = process.env.PORT || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, '../public')));
 
 // ✅ 1. CORS - максимально открыто для отладки
 app.use(cors({
@@ -54,18 +52,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// ✅ 3. Парсинг JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ 4. ПРОСТАЯ КОНФИГУРАЦИЯ СЕССИИ (без Sequelize store для начала)
 const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'debug-secret-key-12345',
   resave: true,
   saveUninitialized: true,
   cookie: {
-    secure: false, 
+    secure: false, // ВРЕМЕННО false для отладки
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: 'lax'
+    sameSite: 'lax' // ВРЕМЕННО lax
   },
   name: 'sessionId',
   proxy: true
@@ -73,6 +73,7 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 
+// ✅ 5. ТЕСТОВЫЙ ЭНДПОИНТ
 app.get('/api/debug', (req, res) => {
   console.log('🔍 Debug endpoint called');
   console.log('Session ID:', req.sessionID);
@@ -93,6 +94,7 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
+// ✅ 6. API маршруты
 app.use('/api/auth', authRoutes);
 app.use('/api/advertisements', advertisementRoutes);
 app.use('/api/profile', profileRoutes);
@@ -101,14 +103,10 @@ app.use('/api/volunteers', volunteerRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/admin/tasks', adminTaskRoutes);
 
+// ✅ 7. Раздача статики (если есть)
 if (process.env.NODE_ENV === 'production') {
-  console.log('📁 Продакшен режим: раздаем статику');
-  
   const distPath = path.join(__dirname, '../dist');
-  console.log('📂 Путь к статике:', distPath);
-  
   app.use(express.static(distPath));
-
   app.get('/*splat', (req, res) => {
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(distPath, 'index.html'));
@@ -116,68 +114,20 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+// ✅ 8. Запуск сервера
 async function startServer() {
   try {
     await sequelize.authenticate();
-    console.log('✓ Подключение к базе данных успешно');
+    console.log('✓ База данных подключена');
     
-    await User.sync({ force: false });
-    console.log('✓ Таблица users синхронизирована');
-    
-    await Profile.sync({ force: false });
-    console.log('✓ Таблица profiles синхронизирована');
-    
-    await Advertisement.sync({ force: false });
-    console.log('✓ Таблица advertisements синхронизирована');
-    
-    await Volunteer.sync({ force: false });
-    console.log('✓ Таблица volunteers синхронизирована');
-    
-    await Task.sync({ force: false });
-    console.log('✓ Таблица tasks синхронизирована');
-    
-    await createAdminUser();
+    await sequelize.sync({ force: false });
+    console.log('✓ Модели синхронизированы');
     
     app.listen(PORT, () => {
       console.log(`✓ Сервер запущен на порту ${PORT}`);
-      console.log(`✓ Режим: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
-    console.error('✗ Ошибка при запуске сервера:', error.message);
-    process.exit(1);
-  }
-}
-
-
-async function createAdminUser() {
-  try {
-    const adminExists = await User.findOne({ where: { email: 'admin@lapapomoshi.ru' } });
-    if (!adminExists) {
-      const admin = await User.create({
-        name: 'Administrator',
-        email: 'admin@lapapomoshi.ru',
-        password: 'Admin123!@#',
-        role: 'admin'
-      });
-      
-      await Profile.create({
-        userId: admin.id,
-        bio: 'Системный администратор',
-        phone: '',
-        city: '',
-        avatar: '/default-avatar.png',
-        telegram: '',
-        vk: '',
-        whatsapp: '',
-        notificationsEnabled: true
-      });
-      
-      console.log('✓ Администратор создан');
-    } else {
-      console.log('✓ Администратор уже существует');
-    }
-  } catch (error) {
-    console.error('Ошибка при создании администратора:', error.message);
+    console.error('✗ Ошибка:', error);
   }
 }
 
