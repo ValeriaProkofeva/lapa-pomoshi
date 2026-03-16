@@ -4,6 +4,7 @@ import session from 'express-session';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import sequelize from './config/database.js';
+import { securityHeaders, limiter, sessionConfig } from './middleware/security.js';
 import authRoutes from './routes/authRoutes.js';
 import advertisementRoutes from './routes/advertisementRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
@@ -23,8 +24,8 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ 1. CORS - максимально открыто для отладки
-app.use(cors({
+// ✅ 1. CORS (ОДИН РАЗ, ПЕРЕД ВСЕМ)
+const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? 'https://lapa-pomoshi.onrender.com'
     : 'http://localhost:5173',
@@ -32,69 +33,24 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
   exposedHeaders: ['Set-Cookie']
-}));
+};
 
-// ✅ 2. Логирование ВСЕХ запросов
-app.use((req, res, next) => {
-  console.log(`\n📨 ${req.method} ${req.path}`);
-  console.log('🍪 Cookies from client:', req.headers.cookie);
-  console.log('🔑 Session ID:', req.sessionID);
-  console.log('👤 User ID in session:', req.session?.userId);
-  
-  // Логируем ответ
-  const oldSend = res.send;
-  res.send = function(data) {
-    console.log('📤 Response headers:', res.getHeaders());
-    console.log('🍪 Set-Cookie:', res.getHeaders()['set-cookie']);
-    oldSend.apply(res, arguments);
-  };
-  
-  next();
-});
+app.use(cors(corsOptions));
 
-// ✅ 3. Парсинг JSON
+// ✅ 2. SECURITY HEADERS (helmet, CSP)
+app.use(securityHeaders);
+
+// ✅ 3. RATE LIMITING
+app.use(limiter);
+
+// ✅ 4. ПАРСИНГ ТЕЛА ЗАПРОСОВ
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ 4. ПРОСТАЯ КОНФИГУРАЦИЯ СЕССИИ (без Sequelize store для начала)
-const sessionConfig = {
-  secret: process.env.SESSION_SECRET || 'debug-secret-key-12345',
-  resave: true,
-  saveUninitialized: true,
-  cookie: {
-    secure: false, // ВРЕМЕННО false для отладки
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
-    sameSite: 'lax' // ВРЕМЕННО lax
-  },
-  name: 'sessionId',
-  proxy: true
-};
-
+// ✅ 5. СЕССИИ (используем конфиг из security.js)
 app.use(session(sessionConfig));
 
-// ✅ 5. ТЕСТОВЫЙ ЭНДПОИНТ
-app.get('/api/debug', (req, res) => {
-  console.log('🔍 Debug endpoint called');
-  console.log('Session ID:', req.sessionID);
-  console.log('Session:', req.session);
-  
-  if (!req.session.views) {
-    req.session.views = 1;
-  } else {
-    req.session.views++;
-  }
-  
-  res.json({
-    message: 'Debug endpoint',
-    sessionID: req.sessionID,
-    session: req.session,
-    cookies: req.headers.cookie,
-    views: req.session.views
-  });
-});
-
-// ✅ 6. API маршруты
+// ✅ 6. API МАРШРУТЫ
 app.use('/api/auth', authRoutes);
 app.use('/api/advertisements', advertisementRoutes);
 app.use('/api/profile', profileRoutes);
@@ -103,10 +59,18 @@ app.use('/api/volunteers', volunteerRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/admin/tasks', adminTaskRoutes);
 
-// ✅ 7. Раздача статики (если есть)
+// ✅ 7. РАЗДАЧА СТАТИКИ (ТОЛЬКО В PRODUCTION)
 if (process.env.NODE_ENV === 'production') {
+  console.log('📁 Продакшен режим: раздаем статику');
+  
   const distPath = path.join(__dirname, '../dist');
+  console.log('📂 Путь к статике:', distPath);
+  
+  // Раздаем статические файлы
   app.use(express.static(distPath));
+  
+  // Все не-API запросы отдаем index.html (для React Router)
+  // ВАЖНО: используем именованный wildcard для новых версий Express
   app.get('/*splat', (req, res) => {
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(distPath, 'index.html'));
@@ -114,20 +78,70 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// ✅ 8. Запуск сервера
+// ✅ 8. СОЗДАНИЕ АДМИНА ПРИ ПЕРВОМ ЗАПУСКЕ
+async function createAdminUser() {
+  try {
+    const adminExists = await User.findOne({ where: { email: 'admin@lapapomoshi.ru' } });
+    if (!adminExists) {
+      const admin = await User.create({
+        name: 'Administrator',
+        email: 'admin@lapapomoshi.ru',
+        password: 'Admin123!@#',
+        role: 'admin'
+      });
+      
+      await Profile.create({
+        userId: admin.id,
+        bio: 'Системный администратор',
+        phone: '',
+        city: '',
+        avatar: '/default-avatar.png',
+        telegram: '',
+        vk: '',
+        whatsapp: '',
+        notificationsEnabled: true
+      });
+      
+      console.log('✓ Администратор создан');
+    } else {
+      console.log('✓ Администратор уже существует');
+    }
+  } catch (error) {
+    console.error('Ошибка при создании администратора:', error.message);
+  }
+}
+
+// ✅ 9. ЗАПУСК СЕРВЕРА
 async function startServer() {
   try {
     await sequelize.authenticate();
-    console.log('✓ База данных подключена');
+    console.log('✓ Подключение к базе данных успешно');
     
-    await sequelize.sync({ force: false });
-    console.log('✓ Модели синхронизированы');
+    // Синхронизация моделей в правильном порядке
+    await User.sync({ force: false });
+    console.log('✓ Таблица users синхронизирована');
+    
+    await Profile.sync({ force: false });
+    console.log('✓ Таблица profiles синхронизирована');
+    
+    await Advertisement.sync({ force: false });
+    console.log('✓ Таблица advertisements синхронизирована');
+    
+    await Volunteer.sync({ force: false });
+    console.log('✓ Таблица volunteers синхронизирована');
+    
+    await Task.sync({ force: false });
+    console.log('✓ Таблица tasks синхронизирована');
+    
+    await createAdminUser();
     
     app.listen(PORT, () => {
       console.log(`✓ Сервер запущен на порту ${PORT}`);
+      console.log(`✓ Режим: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
-    console.error('✗ Ошибка:', error);
+    console.error('✗ Ошибка при запуске сервера:', error.message);
+    process.exit(1);
   }
 }
 
