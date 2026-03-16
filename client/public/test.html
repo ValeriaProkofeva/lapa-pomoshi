@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Session</title>
+</head>
+<body>
+    <h1>Тест сессии</h1>
+    <button onclick="testSession()">Проверить сессию</button>
+    <button onclick="login()">Тестовый вход</button>
+    <pre id="result"></pre>
+
+    <script>
+        const API_URL = 'https://lapa-pomoshi.onrender.com';
+
+        async function testSession() {
+            try {
+                const res = await fetch(`${API_URL}/api/debug`, {
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                document.getElementById('result').textContent = 
+                    JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('result').textContent = 'Ошибка: ' + err;
+            }
+        }
+
+        async function login() {
+            try {
+                const res = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: 'admin@lapapomoshi.ru',
+                        password: 'Admin123!@#'
+                    })
+                });
+                const data = await res.json();
+                document.getElementById('result').textContent = 
+                    JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('result').textContent = 'Ошибка: ' + err;
+            }
+        }
+    </script>
+</body>
+</html>

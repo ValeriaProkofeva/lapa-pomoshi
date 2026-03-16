@@ -23,28 +23,75 @@ const PORT = process.env.PORT || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, '../public')));
 
-const corsOptions = {
+// ✅ 1. CORS - максимально открыто для отладки
+app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? 'https://lapa-pomoshi.onrender.com'  
+    ? 'https://lapa-pomoshi.onrender.com'
     : 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
   exposedHeaders: ['Set-Cookie']
-};
+}));
 
-app.use(cors(corsOptions));
-
-app.use(securityHeaders);
-
-app.use(limiter);
+// ✅ 2. Логирование ВСЕХ запросов
+app.use((req, res, next) => {
+  console.log(`\n📨 ${req.method} ${req.path}`);
+  console.log('🍪 Cookies from client:', req.headers.cookie);
+  console.log('🔑 Session ID:', req.sessionID);
+  console.log('👤 User ID in session:', req.session?.userId);
+  
+  // Логируем ответ
+  const oldSend = res.send;
+  res.send = function(data) {
+    console.log('📤 Response headers:', res.getHeaders());
+    console.log('🍪 Set-Cookie:', res.getHeaders()['set-cookie']);
+    oldSend.apply(res, arguments);
+  };
+  
+  next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET || 'debug-secret-key-12345',
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    secure: false, 
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: 'lax'
+  },
+  name: 'sessionId',
+  proxy: true
+};
+
 app.use(session(sessionConfig));
 
+app.get('/api/debug', (req, res) => {
+  console.log('🔍 Debug endpoint called');
+  console.log('Session ID:', req.sessionID);
+  console.log('Session:', req.session);
+  
+  if (!req.session.views) {
+    req.session.views = 1;
+  } else {
+    req.session.views++;
+  }
+  
+  res.json({
+    message: 'Debug endpoint',
+    sessionID: req.sessionID,
+    session: req.session,
+    cookies: req.headers.cookie,
+    views: req.session.views
+  });
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/advertisements', advertisementRoutes);
@@ -53,7 +100,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/volunteers', volunteerRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/admin/tasks', adminTaskRoutes);
-
 
 if (process.env.NODE_ENV === 'production') {
   console.log('📁 Продакшен режим: раздаем статику');
