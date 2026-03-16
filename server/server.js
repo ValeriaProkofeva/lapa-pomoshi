@@ -3,7 +3,6 @@ import cors from 'cors';
 import session from 'express-session';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import helmet from 'helmet';
 import sequelize from './config/database.js';
 import { securityHeaders, limiter, sessionConfig } from './middleware/security.js';
 import authRoutes from './routes/authRoutes.js';
@@ -25,33 +24,27 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? true  
-    : 'http://localhost:5173',
-  credentials: true
-}));
-
-app.use(securityHeaders);
-app.use(limiter);
-
-app.use(cors({
+const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? 'https://lapa-pomoshi.onrender.com'  
     : 'http://localhost:5173',
-  credentials: true,  
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
   exposedHeaders: ['Set-Cookie']
-}));
+};
 
+app.use(cors(corsOptions));
+
+app.use(securityHeaders);
+
+app.use(limiter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session(sessionConfig));
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/advertisements', advertisementRoutes);
@@ -60,6 +53,55 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/volunteers', volunteerRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/admin/tasks', adminTaskRoutes);
+
+
+if (process.env.NODE_ENV === 'production') {
+  console.log('📁 Продакшен режим: раздаем статику');
+  
+  const distPath = path.join(__dirname, '../dist');
+  console.log('📂 Путь к статике:', distPath);
+  
+  app.use(express.static(distPath));
+
+  app.get('/*splat', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
+  });
+}
+
+async function startServer() {
+  try {
+    await sequelize.authenticate();
+    console.log('✓ Подключение к базе данных успешно');
+    
+    await User.sync({ force: false });
+    console.log('✓ Таблица users синхронизирована');
+    
+    await Profile.sync({ force: false });
+    console.log('✓ Таблица profiles синхронизирована');
+    
+    await Advertisement.sync({ force: false });
+    console.log('✓ Таблица advertisements синхронизирована');
+    
+    await Volunteer.sync({ force: false });
+    console.log('✓ Таблица volunteers синхронизирована');
+    
+    await Task.sync({ force: false });
+    console.log('✓ Таблица tasks синхронизирована');
+    
+    await createAdminUser();
+    
+    app.listen(PORT, () => {
+      console.log(`✓ Сервер запущен на порту ${PORT}`);
+      console.log(`✓ Режим: ${process.env.NODE_ENV || 'development'}`);
+    });
+  } catch (error) {
+    console.error('✗ Ошибка при запуске сервера:', error.message);
+    process.exit(1);
+  }
+}
+
 
 async function createAdminUser() {
   try {
@@ -90,50 +132,6 @@ async function createAdminUser() {
     }
   } catch (error) {
     console.error('Ошибка при создании администратора:', error.message);
-  }
-}
-
-if (process.env.NODE_ENV === 'production') {
-  console.log('📁 Продакшен режим: раздаем статику');
-  
-  const distPath = path.join(__dirname, '../dist');
-  console.log('📂 Путь к статике:', distPath);
-  
-
-  app.use(express.static(distPath));
-  
-  app.get('/*splat', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(distPath, 'index.html'));
-    }
-  });
-}
-
-async function startServer() {
-  try {
-    await sequelize.authenticate();
-    console.log('✓ Подключение к базе данных успешно');
-    
-    await User.sync({ force: false });
-    console.log('✓ Таблица users синхронизирована');
-    
-    await Profile.sync({ force: false });
-    console.log('✓ Таблица profiles синхронизирована');
-    
-    await Advertisement.sync({ force: false });
-    console.log('✓ Таблица advertisements синхронизирована');
-     await Volunteer.sync();
-     await Task.sync();
-    
-    await createAdminUser();
-    
-    app.listen(PORT, () => {
-      console.log(`✓ Сервер запущен на порту ${PORT}`);
-      console.log(`✓ Режим: ${process.env.NODE_ENV || 'development'}`);
-    });
-  } catch (error) {
-    console.error('✗ Ошибка при запуске сервера:', error.message);
-    process.exit(1);
   }
 }
 

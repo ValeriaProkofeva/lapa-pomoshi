@@ -7,21 +7,28 @@ import crypto from 'crypto';
 
 const SequelizeStore = SequelizeStoreFactory(session.Store);
 
-
 export const securityHeaders = helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      connectSrc: ["'self'", "https://lapa-pomoshi.onrender.com", "ws:", "wss:"],
+      connectSrc: [
+        "'self'", 
+        "https://lapa-pomoshi.onrender.com", 
+        "ws:", 
+        "wss:",
+        "http://localhost:5173" 
+      ],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "blob:"],
-      scriptSrc: ["'self'"]
+      scriptSrc: ["'self'"],
+      frameSrc: ["'self'"],
+      upgradeInsecureRequests: []
     }
   },
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }
 });
-
 
 export const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
@@ -30,7 +37,6 @@ export const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false
 });
-
 
 export const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, 
@@ -44,15 +50,17 @@ const sessionStore = new SequelizeStore({
 });
 
 export const sessionConfig = {
- secret: process.env.SESSION_SECRET || 'your-secret-key',
+  secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
+  store: sessionStore,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // true в продакшене
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 часа
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // ВАЖНО!
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined
   },
-  name: 'sessionId'
+  name: 'sessionId',
+  proxy: true 
 };
