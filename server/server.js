@@ -20,7 +20,7 @@ import { securityHeaders, limiter, sessionConfig, sessionStore } from './middlew
 
 
 const app = express();
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 const PORT = process.env.PORT || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
