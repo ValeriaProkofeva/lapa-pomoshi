@@ -28,10 +28,17 @@ export const securityHeaders = helmet({
 
 export const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
-  max: 100, 
-  message: 'Слишком много запросов с вашего IP, попробуйте позже',
+  max: 100,
+  message: 'Слишком много запросов',
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  keyGenerator: (req) => {
+    return req.ip || req.connection.remoteAddress;
+  },
+  validate: {
+    xForwardedForHeader: false,
+    ip: false 
+  }
 });
 
 export const authLimiter = rateLimit({
