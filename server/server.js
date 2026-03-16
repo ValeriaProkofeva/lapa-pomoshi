@@ -3,6 +3,7 @@ import cors from 'cors';
 import session from 'express-session';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import helmet from 'helmet';
 import sequelize from './config/database.js';
 import { securityHeaders, limiter, sessionConfig } from './middleware/security.js';
 import authRoutes from './routes/authRoutes.js';
@@ -24,6 +25,16 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: ["'self'", "https://lapa-pomoshi.onrender.com"],
+      },
+    },
+  })
+);
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
