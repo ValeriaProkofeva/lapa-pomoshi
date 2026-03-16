@@ -47,8 +47,8 @@ export { sessionStore };
 export const sessionConfig = {
   secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
   store: sessionStore,
-  resave: false,
-  saveUninitialized: false,
+  resave: true, // Временно true для отладки
+  saveUninitialized: true, // Временно true для отладки
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,

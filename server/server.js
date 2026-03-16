@@ -133,7 +133,13 @@ async function startServer() {
     
     await Task.sync({ force: false });
     console.log('✓ Таблица tasks синхронизирована');
-    
+    try {
+  await sessionStore.sync();
+  console.log('✓ Таблица сессий создана');
+} catch (error) {
+  console.error('❌ Ошибка создания таблицы сессий:', error.message);
+}
+
     // ✅ ВАЖНО: синхронизируем таблицу сессий
     if (sessionStore && typeof sessionStore.sync === 'function') {
       await sessionStore.sync();
