@@ -42,8 +42,7 @@ app.use(cors(corsOptions));
 // ✅ 2. SECURITY HEADERS (helmet, CSP)
 app.use(securityHeaders);
 
-// ✅ 3. RATE LIMITING
-app.use(limiter);
+
 
 // ✅ 4. ПАРСИНГ ТЕЛА ЗАПРОСОВ
 app.use(express.json());
