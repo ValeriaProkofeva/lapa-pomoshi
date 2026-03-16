@@ -16,7 +16,7 @@ import Advertisement from './models/Advertisement.js';
 import Profile from './models/Profile.js';
 import Volunteer from './models/Volunteer.js';
 import Task from './models/Task.js';
-import { securityHeaders, limiter, sessionConfig, sessionStore } from './middleware/security.js';
+import { securityHeaders, sessionConfig, sessionStore } from './middleware/security.js';
 
 
 const app = express();
