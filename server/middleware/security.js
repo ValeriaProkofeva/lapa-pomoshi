@@ -27,6 +27,12 @@ export const securityHeaders = helmet({
 });
 
 
+export const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, 
+  max: 5, 
+  message: 'Слишком много попыток входа, попробуйте через час',
+  skipSuccessfulRequests: true
+});
 
 // ✅ ЭКСПОРТИРУЕМ ВСЕ НУЖНЫЕ КОМПОНЕНТЫ
 export { sessionStore };
