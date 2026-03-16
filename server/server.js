@@ -133,6 +133,10 @@ async function startServer() {
     await Task.sync({ force: false });
     console.log('✓ Таблица tasks синхронизирована');
     
+    const { sessionStore } = await import('./middleware/security.js');
+    await sessionStore.sync();
+    console.log('✓ Таблица сессий синхронизирована');
+    
     await createAdminUser();
     
     app.listen(PORT, () => {
