@@ -1,0 +1,379 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Seymour+One&family=Raleway:wght@500;600&display=swap');
+
+.HeaderConteiner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: #FFF8F2;
+  border-bottom: 2px solid #AD9885;
+  font-family: 'Poppins', sans-serif;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.ConteinerLeft, .ConteinerRight {
+  display: flex;
+  gap: 25px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.ConteinerLeft {
+  justify-content: flex-start;
+}
+
+.ConteinerRight {
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.ConteinerCenter {
+  flex: 0 1 auto;
+  text-align: center;
+}
+
+.HeaderTxt {
+  color: #5F4834;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.HeaderTxt:hover {
+  color: #AD9885;
+  background-color: rgba(173, 152, 133, 0.1);
+}
+
+.HeaderH1 {
+  font-family: 'Seymour One', sans-serif;
+  font-size: 28px;
+  color: #5F4834;
+  margin: 0;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.btnCreate, .btnReg {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btnCreate {
+  background-color: #AD9885;
+  color: #ffffff;
+}
+
+.btnCreate:hover {
+  background-color: #9a8572;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(173, 152, 133, 0.3);
+}
+
+.btnReg {
+  background-color: #5F4834;
+  color: #ffffff;
+}
+
+.btnReg:hover {
+  background-color: #4e3b2a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(95, 72, 52, 0.3);
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userName {
+  color: #FFF8F2;
+  font-weight: 600;
+  padding: 10px 24px;
+  background-color: #AD9885;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  font-size: 16px;
+  border: 2px solid transparent;
+}
+
+.userName:hover {
+  background-color: #5F4834;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(95, 72, 52, 0.2);
+}
+
+.adminButton {
+  background: none;
+  border: 2px solid #5F4834;
+  border-radius: 30px;
+  padding: 8px 16px;
+  color: #5F4834;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 500;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.adminButton:hover {
+  background-color: #5F4834;
+  color: #FFF8F2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(95, 72, 52, 0.2);
+}
+
+.adminButton svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.logoutButton {
+  background: none;
+  border: 2px solid #AD9885;
+  border-radius: 30px;
+  padding: 8px 18px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #5F4834;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.logoutButton:hover {
+  background-color: #AD9885;
+  color: #FFF8F2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(173, 152, 133, 0.3);
+}
+
+.logoutButton svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+@media (max-width: 1200px) {
+  .HeaderConteiner {
+    flex-direction: column;
+    padding: 15px 20px;
+  }
+  
+  .ConteinerLeft, .ConteinerRight {
+    width: 100%;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .ConteinerLeft {
+    order: 2;
+  }
+  
+  .ConteinerCenter {
+    order: 1;
+    width: 100%;
+  }
+  
+  .ConteinerRight {
+    order: 3;
+  }
+  
+  .HeaderH1 {
+    font-size: 26px;
+  }
+  
+  .HeaderTxt {
+    font-size: 15px;
+    padding: 6px 10px;
+  }
+  .btnReg{
+    padding: 10px 18px;
+    font-size: 14px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .btnCreate  {
+    padding: 10px 18px;
+    font-size: 14px;
+    flex: 1;
+    text-align: center;
+  }
+  
+  .userName {
+    width: 120px;
+    background-color:  #5F4834;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .userInfo {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .userName {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .adminButton, .logoutButton {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .HeaderConteiner {
+    padding: 12px 15px;
+  }
+  
+  .ConteinerLeft {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .HeaderTxt {
+    font-size: 14px;
+    padding: 5px 8px;
+    white-space: normal;
+    text-align: center;
+    flex: 1;
+  }
+  
+  .HeaderH1 {
+    font-size: 22px;
+  }
+  
+  .btnCreate, .btnReg {
+    padding: 8px 12px;
+    font-size: 13px;
+    width: 100%;
+  }
+  
+  .userSection {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .userInfo {
+    flex-direction: column;
+  }
+  
+  .userName {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .adminButton, .logoutButton {
+    width: 100%;
+    padding: 10px;
+    justify-content: center;
+  }
+  
+  .adminButton svg,
+  .logoutButton svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .HeaderH1 {
+    font-size: 20px;
+  }
+  
+  .HeaderTxt {
+    font-size: 13px;
+    padding: 4px 6px;
+  }
+  
+  .ConteinerLeft {
+    gap: 5px;
+  }
+  
+  .btnCreate, .btnReg {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  
+  .userName {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+  
+  .adminButton span,
+  .logoutButton span {
+    display: none; 
+  }
+  
+  .adminButton,
+  .logoutButton {
+    padding: 10px;
+    aspect-ratio: 1;
+  }
+  
+  .adminButton svg,
+  .logoutButton svg {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 1100px) and (orientation: landscape) {
+  .HeaderConteiner {
+    flex-direction: row;
+    padding: 10px 20px;
+  }
+  
+  .HeaderH1 {
+    font-size: 22px;
+  }
+  
+  .ConteinerLeft, .ConteinerRight {
+    gap: 10px;
+  }
+  
+  .btnCreate, .btnReg {
+    padding: 8px 16px;
+  }
+  
+  .userSection {
+    flex-direction: row;
+  }
+  
+  .userInfo {
+    width: auto;
+  }
+}

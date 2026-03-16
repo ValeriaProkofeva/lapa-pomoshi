@@ -1,0 +1,639 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Raleway:wght@400;500;600&family=Seymour+One&display=swap');
+
+.advertisementsContainer {
+  display: flex;
+  gap: 30px;
+  padding: 30px 40px;
+  background-color: #fff7f3;
+  min-height: calc(100vh - 80px);
+  font-family: 'Raleway', sans-serif;
+}
+
+/* Левая часть */
+.leftSection {
+  flex: 2;
+  min-width: 0; /* Предотвращает переполнение */
+}
+
+/* Правая часть */
+.rightSection {
+  flex: 1;
+  background-color: #FFF8F2;
+  border: 2px solid #AD9885;
+  border-radius: 16px;
+  padding: 25px;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+  max-width: 350px; /* Ограничиваем максимальную ширину */
+}
+
+.rightSection h2 {
+  font-family: 'Seymour One', sans-serif;
+  font-size: 24px;
+  color: #5F4834;
+  margin: 0 0 20px 0;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #AD9885;
+}
+
+.rightSection h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #5F4834;
+  margin: 25px 0 10px 0;
+}
+
+.rightSection p {
+  color: #5F4834;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.rightSection ul {
+  list-style: none;
+  padding: 0;
+}
+
+.rightSection li {
+  color: #5F4834;
+  margin-bottom: 12px;
+  padding-left: 25px;
+  position: relative;
+}
+
+.rightSection li:before {
+  content: "•";
+  color: #AD9885;
+  font-size: 20px;
+  position: absolute;
+  left: 5px;
+  top: -2px;
+}
+
+.filters {
+  width: 100%;
+  border: 2px solid #5F4834;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  background-color: #FFF8F2;
+  box-sizing: border-box;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  flex: 1 1 150px;
+}
+
+.filterGroup label {
+  color: #5F4834;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.filterGroup input,
+.filterGroup select {
+  border: 1px solid #5F4834;
+  border-radius: 5px;
+  padding: 8px 10px;
+  background-color: #fff7f3;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.clearFilters {
+  background-color: #5F4834;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-end;
+  height: 37px;
+}
+
+.clearFilters:hover {
+  background-color: #AD9885;
+}
+
+/* Список объявлений */
+.adsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Карточка объявления */
+.adCard {
+  background-color: #FFF8F2;
+  border: 2px solid #AD9885;
+  border-radius: 12px;
+  display: flex;
+  overflow: hidden;
+}
+
+.adCard:hover {
+  border-color: #5F4834;
+  box-shadow: 0 5px 15px rgba(95, 72, 52, 0.2);
+}
+
+.adPhoto {
+  width: 200px;
+  background-color: #AD9885;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  color: #5F4834;
+}
+
+.adInfo {
+  flex: 1;
+  padding: 20px;
+}
+
+.adHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.adStatus {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+}
+
+.statusLost {
+  background-color: #d32f2f;
+}
+
+.statusFound {
+  background-color: #2e7d32;
+}
+
+.adAnimalType {
+  font-size: 18px;
+  font-weight: 600;
+  color: #5F4834;
+}
+
+.adDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 10px 0;
+}
+
+.adDetail {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #5F4834;
+  font-size: 14px;
+}
+
+.adDescription {
+  color: #5F4834;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 10px 0;
+  padding: 10px 0;
+  border-top: 1px solid #AD9885;
+  border-bottom: 1px solid #AD9885;
+}
+
+.adContacts {
+  display: flex;
+  gap: 20px;
+  color: #5F4834;
+  font-size: 14px;
+}
+
+.adContact {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.adDate {
+  color: #AD9885;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+/* Пагинация */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+.pageButton {
+  padding: 8px 14px;
+  border: 2px solid #AD9885;
+  background-color: #FFF8F2;
+  color: #5F4834;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.pageButton:hover {
+  background-color: #AD9885;
+  color: white;
+}
+
+.pageButton.active {
+  background-color: #5F4834;
+  color: white;
+  border-color: #5F4834;
+}
+
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Сообщения */
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: #AD9885;
+}
+
+.noAds {
+  text-align: center;
+  padding: 50px;
+  color: #AD9885;
+  border: 2px dashed #AD9885;
+  border-radius: 12px;
+}
+
+/* Модальное окно */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(95, 72, 52, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: #FFF8F2;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modalContent h2 {
+  font-family: 'Seymour One', sans-serif;
+  color: #5F4834;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #5F4834;
+  cursor: pointer;
+}
+
+/* Форма */
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.formRow {
+  display: flex;
+  gap: 15px;
+}
+
+.formGroup {
+  flex: 1;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  color: #5F4834;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #AD9885;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  background-color: #FFF8F2;
+  box-sizing: border-box;
+}
+
+.formGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.submitButton {
+  background-color: #5F4834;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.submitButton:hover {
+  background-color: #AD9885;
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.successMessage {
+  color: #2e7d32;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: center;
+}
+
+/* Адаптивность - ИСПРАВЛЕНО */
+@media (max-width: 1100px) {
+  .advertisementsContainer {
+    gap: 20px;
+    padding: 20px 30px;
+  }
+  
+  .rightSection {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 900px) {
+  .advertisementsContainer {
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .leftSection {
+    width: 100%;
+  }
+  
+  .rightSection {
+    position: static;
+    max-width: 100%;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .filters {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .advertisementsContainer {
+    padding: 15px;
+  }
+  
+  .filters {
+    flex-direction: column;
+    padding: 15px;
+  }
+  
+  .filterGroup {
+    width: 100%;
+  }
+  
+  .clearFilters {
+    width: 100%;
+    padding: 10px;
+    align-self: center;
+  }
+  
+  .adCard {
+    flex-direction: column;
+  }
+  
+  .adPhoto {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .adInfo {
+    padding: 15px;
+  }
+  
+  .rightSection {
+    padding: 20px;
+  }
+  
+  .rightSection h2 {
+    font-size: 22px;
+  }
+  
+  .rightSection h3 {
+    font-size: 17px;
+    margin: 20px 0 8px;
+  }
+  
+  .formRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .pageButton {
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .advertisementsContainer {
+    padding: 10px;
+  }
+  
+  .filters {
+    padding: 12px;
+  }
+  
+  .filterGroup label {
+    font-size: 13px;
+  }
+  
+  .filterGroup input,
+  .filterGroup select {
+    padding: 8px;
+  }
+  
+  .adPhoto {
+    height: 180px;
+  }
+  
+  .adInfo {
+    padding: 12px;
+  }
+  
+  .adHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .adAnimalType {
+    font-size: 16px;
+  }
+  
+  .adDetails {
+    gap: 10px;
+  }
+  
+  .adDetail {
+    font-size: 13px;
+  }
+  
+  .adDescription {
+    font-size: 13px;
+    padding: 8px 0;
+  }
+  
+  .adContacts {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .adDate {
+    font-size: 11px;
+  }
+  
+  .rightSection {
+    padding: 15px;
+  }
+  
+  .rightSection h2 {
+    font-size: 20px;
+  }
+  
+  .rightSection h3 {
+    font-size: 16px;
+  }
+  
+  .rightSection p,
+  .rightSection li {
+    font-size: 14px;
+  }
+  
+  .pageButton {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .modalContent {
+    padding: 20px;
+  }
+  
+  .modalContent h2 {
+    font-size: 20px;
+  }
+  
+  .submitButton {
+    padding: 12px;
+    font-size: 15px;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+  .advertisementsContainer {
+    padding: 8px;
+  }
+  
+  .filters {
+    padding: 10px;
+  }
+  
+  .filterGroup input,
+  .filterGroup select {
+    padding: 6px;
+    font-size: 13px;
+  }
+  
+  .adPhoto {
+    height: 160px;
+  }
+  
+  .adInfo {
+    padding: 10px;
+  }
+  
+  .adStatus {
+    font-size: 12px;
+    padding: 3px 10px;
+  }
+  
+  .rightSection {
+    padding: 12px;
+  }
+  
+  .rightSection h2 {
+    font-size: 18px;
+  }
+  
+  .pageButton {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+}
