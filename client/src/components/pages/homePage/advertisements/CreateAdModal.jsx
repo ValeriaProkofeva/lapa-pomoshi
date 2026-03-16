@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './Advertisements.module.css';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+
 function CreateAdModal({ isOpen, onClose, user, onAdCreated }) {
   const [formData, setFormData] = useState({
     animalType: 'dog',
@@ -33,7 +35,7 @@ function CreateAdModal({ isOpen, onClose, user, onAdCreated }) {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/advertisements', {
+      const response = await fetch(`${API_BASE_URL}/api/advertisements`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

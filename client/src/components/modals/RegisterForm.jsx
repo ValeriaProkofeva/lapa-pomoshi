@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './AuthModal.module.css';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+
 function RegisterForm({ onToggle, onClose, onRegister }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -66,7 +68,7 @@ function RegisterForm({ onToggle, onClose, onRegister }) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

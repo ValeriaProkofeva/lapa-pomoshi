@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './AuthModal.module.css';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+
 function LoginForm({ onToggle, onClose, onLogin }) {
   const [formData, setFormData] = useState({
     email: '',
@@ -47,7 +49,7 @@ function LoginForm({ onToggle, onClose, onLogin }) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

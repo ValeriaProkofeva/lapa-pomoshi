@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Advertisements.module.css';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+
 function Advertisements({ user, onRequireAuth }) {
 
 useEffect(() => {
@@ -65,7 +67,7 @@ useEffect(() => {
         limit: 10
       }).toString();
 
-      const response = await fetch(`http://localhost:5000/api/advertisements?${queryParams}`);
+       const response = await fetch(`${API_BASE_URL}/api/advertisements?${queryParams}`);
       const data = await response.json();
 
       if (response.ok) {

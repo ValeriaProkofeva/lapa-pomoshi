@@ -9,6 +9,8 @@ import HelpPage from '../../help/HelpPage';
 import Footer from '../../footer/Footer';
 import CreateAdModal from './advertisements/CreateAdModal';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+
 function HomePage() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -17,6 +19,8 @@ function HomePage() {
   const [isHelpPageOpen, setIsHelpPageOpen] = useState(false);
   const [isCreateAdModalOpen, setIsCreateAdModalOpen] = useState(false);
   const [user, setUser] = useState(null);
+
+  
 
   useEffect(() => {
     checkAuth();
@@ -32,7 +36,7 @@ function HomePage() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/check', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/check`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -63,7 +67,7 @@ function HomePage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/logout', {
+     const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });

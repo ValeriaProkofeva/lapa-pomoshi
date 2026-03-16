@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Profile.module.css';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+
 function Profile({ user, onLogout, onClose }) {
   const [activeTab, setActiveTab] = useState('profile');
   const [profile, setProfile] = useState(null);
@@ -77,7 +79,7 @@ function Profile({ user, onLogout, onClose }) {
 
   const loadProfile = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -118,7 +120,7 @@ function Profile({ user, onLogout, onClose }) {
 
   const loadMyAds = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/profile/advertisements', {
+      const response = await fetch(`${API_BASE_URL}/api/profile/advertisements`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -133,7 +135,7 @@ function Profile({ user, onLogout, onClose }) {
   const loadMyTasks = async () => {
     try {
       console.log('Загрузка задач для волонтера...');
-      const response = await fetch(`http://localhost:5000/api/tasks/my?page=${tasksPagination.page}&limit=5`, {
+       const response = await fetch(`${API_BASE_URL}/api/tasks/my?page=${tasksPagination.page}&limit=5`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -156,7 +158,7 @@ function Profile({ user, onLogout, onClose }) {
 
   const handleTaskStatusUpdate = async (taskId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -210,7 +212,7 @@ function Profile({ user, onLogout, onClose }) {
     setError('');
     
     try {
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -244,7 +246,7 @@ function Profile({ user, onLogout, onClose }) {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -278,7 +280,7 @@ function Profile({ user, onLogout, onClose }) {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/profile/password', {
+      const response = await fetch(`${API_BASE_URL}/api/profile/password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -329,7 +331,7 @@ function Profile({ user, onLogout, onClose }) {
     setSuccess('');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/advertisements/${editingAd.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/advertisements/${editingAd.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -363,7 +365,7 @@ function Profile({ user, onLogout, onClose }) {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/advertisements/${adId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/advertisements/${adId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -387,7 +389,7 @@ function Profile({ user, onLogout, onClose }) {
 
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

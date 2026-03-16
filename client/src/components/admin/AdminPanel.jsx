@@ -6,6 +6,8 @@ import Pagination from './Pagination';
 import Modal, { ModalActions } from './Modal';
 import StatCards from './StatCards';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+
 function AdminPanel({ user, onClose, onLogout }) {
   const [activeTab, setActiveTab] = useState('users');
   const [loading, setLoading] = useState(true);
@@ -94,9 +96,13 @@ function AdminPanel({ user, onClose, onLogout }) {
     }
   };
 
-  const apiCall = async (url, options = {}) => {
+const apiCall = async (url, options = {}) => {
     try {
-      const response = await fetch(url, { credentials: 'include', ...options });
+      const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
+      const response = await fetch(fullUrl, { 
+        credentials: 'include', 
+        ...options 
+      });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Ошибка запроса');
       return data;
@@ -113,7 +119,7 @@ function AdminPanel({ user, onClose, onLogout }) {
       ...users.filters
     }).toString();
 
-    const data = await apiCall(`http://localhost:5000/api/admin/users?${params}`);
+    const data = await apiCall(`/api/admin/users?${params}`);
     if (data) {
       setUsers(prev => ({
         ...prev,
@@ -134,7 +140,7 @@ function AdminPanel({ user, onClose, onLogout }) {
       ...ads.filters
     }).toString();
 
-    const data = await apiCall(`http://localhost:5000/api/admin/advertisements?${params}`);
+    const data = await apiCall(`/api/admin/advertisements?${params}`);
     if (data) {
       setAds(prev => ({
         ...prev,
@@ -155,7 +161,7 @@ function AdminPanel({ user, onClose, onLogout }) {
       ...volunteers.filters
     }).toString();
 
-    const data = await apiCall(`http://localhost:5000/api/admin/volunteers?${params}`);
+    const data = await apiCall(`/api/admin/volunteers?${params}`);
     if (data) {
       setVolunteers(prev => ({
         ...prev,
@@ -170,7 +176,7 @@ function AdminPanel({ user, onClose, onLogout }) {
   };
 
   const loadVolunteerStats = async () => {
-    const data = await apiCall('http://localhost:5000/api/admin/volunteers/stats');
+    const data = await apiCall(`/api/admin/volunteers/stats`);
     if (data) {
       setVolunteers(prev => ({ ...prev, stats: data }));
     }
@@ -183,7 +189,7 @@ function AdminPanel({ user, onClose, onLogout }) {
       ...tasks.filters
     }).toString();
 
-    const data = await apiCall(`http://localhost:5000/api/admin/tasks?${params}`);
+    const data = await apiCall(`/api/admin/tasks?${params}`);
     if (data) {
       setTasks(prev => ({
         ...prev,
@@ -194,14 +200,14 @@ function AdminPanel({ user, onClose, onLogout }) {
   };
 
   const loadTaskStats = async () => {
-    const data = await apiCall('http://localhost:5000/api/admin/tasks?limit=1');
+    const data = await apiCall(`/api/admin/tasks?limit=1`);
     if (data && data.stats) {
       setTasks(prev => ({ ...prev, stats: data.stats }));
     }
   };
 
   const loadAvailableVolunteers = async () => {
-    const data = await apiCall('http://localhost:5000/api/admin/tasks/volunteers/available');
+    const data = await apiCall(`/api/admin/tasks/volunteers/available`);
     if (data) {
       setAvailableVolunteers(data);
     }
@@ -212,7 +218,7 @@ function AdminPanel({ user, onClose, onLogout }) {
     setError('');
     setSuccess('');
 
-    const data = await apiCall('http://localhost:5000/api/admin/tasks', {
+    const data = await apiCall(`/api/admin/tasks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(taskForm)
@@ -239,7 +245,7 @@ function AdminPanel({ user, onClose, onLogout }) {
   };
 
   const handleUpdateTask = async (taskId, updates) => {
-    const data = await apiCall(`http://localhost:5000/api/admin/tasks/${taskId}`, {
+    const data = await apiCall(`/api/admin/tasks/${taskId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
@@ -260,7 +266,7 @@ function AdminPanel({ user, onClose, onLogout }) {
     setSuccess('');
 
     try {
-      const url = `http://localhost:5000/api/admin/tasks/${taskId}`;
+      const url = `/api/admin/tasks/${taskId}`;
       console.log('Отправка DELETE запроса на:', url);
 
       const response = await fetch(url, {
@@ -433,7 +439,7 @@ function AdminPanel({ user, onClose, onLogout }) {
     setSaving(true);
 
     try {
-      const url = `http://localhost:5000/api/admin/users/${selectedItem.id}/reset-password`;
+      const url = `${API_BASE_URL}/api/admin/users/${selectedItem.id}/reset-password`;
       console.log('Отправка запроса на:', url);
 
       const response = await fetch(url, {

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './VolunteerPage.module.css';
 
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+
 function VolunteerPage({ user, onOpenAuth, onClose }) {
   const [loading, setLoading] = useState(true);
   const [volunteerInfo, setVolunteerInfo] = useState(null);
@@ -27,7 +29,7 @@ function VolunteerPage({ user, onOpenAuth, onClose }) {
 
   const loadVolunteerInfo = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/volunteers/info');
+      const response = await fetch(`${API_BASE_URL}/api/volunteers/info`);
       const data = await response.json();
       if (response.ok) {
         setVolunteerInfo(data);
@@ -41,7 +43,7 @@ function VolunteerPage({ user, onOpenAuth, onClose }) {
 
   const loadVolunteerStatus = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/volunteers/status', {
+      const response = await fetch(`${API_BASE_URL}/api/volunteers/status`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -80,7 +82,7 @@ function VolunteerPage({ user, onOpenAuth, onClose }) {
     setSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/volunteers/register', {
+      const response = await fetch(`${API_BASE_URL}/api/volunteers/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
