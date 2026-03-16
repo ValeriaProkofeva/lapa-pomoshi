@@ -90,22 +90,19 @@ async function createAdminUser() {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  console.log(' Продакшен режим: раздаем статику из ../dist');
-
-  const distPath = path.join(__dirname, '../dist');
-  console.log(' Путь к статике:', distPath);
+  console.log('📁 Продакшен режим: раздаем статику');
   
+  const distPath = path.join(__dirname, '../dist');
+  console.log('📂 Путь к статике:', distPath);
+  
+
   app.use(express.static(distPath));
   
-  app.get('*', (req, res) => {
+  app.get('/*splat', (req, res) => {
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(distPath, 'index.html'));
     }
   });
-  
-  console.log(' Статика настроена');
-} else {
-  console.log('🛠️Режим разработки: статика не раздается');
 }
 
 async function startServer() {
