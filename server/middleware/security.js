@@ -26,28 +26,7 @@ export const securityHeaders = helmet({
   crossOriginEmbedderPolicy: false
 });
 
-// middleware/security.js
-export const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 минут
-  max: 100, // максимум 100 запросов
-  message: 'Слишком много запросов',
-  standardHeaders: true,
-  legacyHeaders: false,
-  // Отключаем ВСЕ проверки
-  validate: false,
-  // Явно указываем ключ
-  keyGenerator: (req) => {
-    // Берем IP из trusted proxy настроек
-    return req.ip || req.connection.remoteAddress || 'unknown';
-  }
-});
 
-export const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, 
-  max: 5, 
-  message: 'Слишком много попыток входа, попробуйте через час',
-  skipSuccessfulRequests: true
-});
 
 // ✅ ЭКСПОРТИРУЕМ ВСЕ НУЖНЫЕ КОМПОНЕНТЫ
 export { sessionStore };
