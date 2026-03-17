@@ -36,7 +36,7 @@ function AuthModal({ isOpen, onClose, initialMode = 'login', onAuth }) {
           <div 
             className={styles.imageSection}
             style={{ 
-              backgroundImage: `url(${getImageUrl(mode === 'login' ? 'https://i.pinimg.com/1200x/39/bc/f2/39bcf20c9239da2177012986a6bf68f5.jpg' : 'https://i.pinimg.com/736x/5c/e9/53/5ce953a43cf792f17e094840abe647fe.jpg')})`, 
+              backgroundImage: `url(${mode === 'login' ? 'https://i.pinimg.com/1200x/39/bc/f2/39bcf20c9239da2177012986a6bf68f5.jpg' : 'https://i.pinimg.com/736x/5c/e9/53/5ce953a43cf792f17e094840abe647fe.jpg'})`, 
             }}
           />
         </div>
