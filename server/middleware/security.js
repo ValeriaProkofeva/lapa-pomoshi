@@ -1,4 +1,3 @@
-import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import session from 'express-session';
 import SequelizeStoreFactory from 'connect-session-sequelize';
@@ -7,7 +6,7 @@ import crypto from 'crypto';
 
 const SequelizeStore = SequelizeStoreFactory(session.Store);
 
-// Создаем хранилище сессий
+// Создаем хранилище сессий в БД
 const sessionStore = new SequelizeStore({
   db: sequelize
 });
@@ -26,45 +25,22 @@ export const securityHeaders = helmet({
   crossOriginEmbedderPolicy: false
 });
 
-export const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 минут
-  max: 100,
-  message: 'Слишком много запросов с вашего IP, попробуйте позже',
-  standardHeaders: true,
-  legacyHeaders: false,
-  // ✅ Отключаем конкретную проверку
-  validate: {
-    trustProxy: false, // Отключаем проверку trust proxy
-    xForwardedForHeader: false, // Отключаем проверку X-Forwarded-For
-    ip: false // Отключаем проверку IP
-  },
-  // ✅ Явно указываем keyGenerator
-  keyGenerator: (req) => {
-    return req.ip || req.connection.remoteAddress || 'unknown';
-  }
-});
+// ✅ Rate-limit ПОЛНОСТЬЮ УБРАН
 
-export const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, 
-  max: 5, 
-  message: 'Слишком много попыток входа, попробуйте через час',
-  skipSuccessfulRequests: true
-});
-
-// ✅ ЭКСПОРТИРУЕМ ВСЕ НУЖНЫЕ КОМПОНЕНТЫ
+// Экспортируем store для синхронизации
 export { sessionStore };
 
+// Настройки сессии (упрощенные для надежности)
 export const sessionConfig = {
   secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
   store: sessionStore,
-  resave: true, // Временно true для отладки
-  saveUninitialized: true, // Временно true для отладки
+  resave: true, // Важно для SequelizeStore
+  saveUninitialized: true, // Важно для создания сессий
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000, // 24 часа
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined
   },
   name: 'sessionId',
   proxy: true

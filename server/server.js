@@ -16,17 +16,18 @@ import Advertisement from './models/Advertisement.js';
 import Profile from './models/Profile.js';
 import Volunteer from './models/Volunteer.js';
 import Task from './models/Task.js';
-import { securityHeaders, limiter, sessionConfig, sessionStore } from './middleware/security.js';
-
+import { securityHeaders, sessionConfig, sessionStore } from './middleware/security.js';
 
 const app = express();
-app.set('trust proxy', 1); 
 const PORT = process.env.PORT || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ 1. CORS (ОДИН РАЗ, ПЕРЕД ВСЕМ)
+// ✅ trust proxy для Render
+app.set('trust proxy', 1);
+
+// ✅ CORS
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? 'https://lapa-pomoshi.onrender.com'
@@ -39,19 +40,17 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// ✅ 2. SECURITY HEADERS (helmet, CSP)
+// ✅ Security headers
 app.use(securityHeaders);
 
-
-
-// ✅ 4. ПАРСИНГ ТЕЛА ЗАПРОСОВ
+// ✅ Парсинг тела запросов
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ 5. СЕССИИ (используем конфиг из security.js)
+// ✅ Сессии (теперь в БД!)
 app.use(session(sessionConfig));
 
-// ✅ 6. API МАРШРУТЫ
+// ✅ API маршруты
 app.use('/api/auth', authRoutes);
 app.use('/api/advertisements', advertisementRoutes);
 app.use('/api/profile', profileRoutes);
@@ -60,18 +59,11 @@ app.use('/api/volunteers', volunteerRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/admin/tasks', adminTaskRoutes);
 
-// ✅ 7. РАЗДАЧА СТАТИКИ (ТОЛЬКО В PRODUCTION)
+// ✅ Статика в production
 if (process.env.NODE_ENV === 'production') {
   console.log('📁 Продакшен режим: раздаем статику');
-  
   const distPath = path.join(__dirname, '../dist');
-  console.log('📂 Путь к статике:', distPath);
-  
-  // Раздаем статические файлы
   app.use(express.static(distPath));
-  
-  // Все не-API запросы отдаем index.html (для React Router)
-  // ВАЖНО: используем именованный wildcard для новых версий Express
   app.get('/*splat', (req, res) => {
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(distPath, 'index.html'));
@@ -79,7 +71,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// ✅ 8. СОЗДАНИЕ АДМИНА ПРИ ПЕРВОМ ЗАПУСКЕ
+// ✅ Создание админа
 async function createAdminUser() {
   try {
     const adminExists = await User.findOne({ where: { email: 'admin@lapapomoshi.ru' } });
@@ -90,66 +82,38 @@ async function createAdminUser() {
         password: 'Admin123!@#',
         role: 'admin'
       });
-      
-      await Profile.create({
-        userId: admin.id,
-        bio: 'Системный администратор',
-        phone: '',
-        city: '',
-        avatar: '/default-avatar.png',
-        telegram: '',
-        vk: '',
-        whatsapp: '',
-        notificationsEnabled: true
-      });
-      
+      await Profile.create({ userId: admin.id });
       console.log('✓ Администратор создан');
-    } else {
-      console.log('✓ Администратор уже существует');
     }
   } catch (error) {
-    console.error('Ошибка при создании администратора:', error.message);
+    console.error('Ошибка создания админа:', error.message);
   }
 }
 
-// ✅ 9. ЗАПУСК СЕРВЕРА
+// ✅ Запуск сервера
 async function startServer() {
   try {
     await sequelize.authenticate();
-    console.log('✓ Подключение к базе данных успешно');
-    
-    // Синхронизация моделей
-    await User.sync({ force: false });
-    console.log('✓ Таблица users синхронизирована');
-    
-    await Profile.sync({ force: false });
-    console.log('✓ Таблица profiles синхронизирована');
-    
-    await Advertisement.sync({ force: false });
-    console.log('✓ Таблица advertisements синхронизирована');
-    
-    await Volunteer.sync({ force: false });
-    console.log('✓ Таблица volunteers синхронизирована');
-    
-    await Task.sync({ force: false });
-    console.log('✓ Таблица tasks синхронизирована');
-    try {
-  await sessionStore.sync();
-  console.log('✓ Таблица сессий создана');
-} catch (error) {
-  console.error('❌ Ошибка создания таблицы сессий:', error.message);
-}
+    console.log('✓ База данных подключена');
 
-    
+    // Синхронизация моделей
+    await User.sync();
+    await Profile.sync();
+    await Advertisement.sync();
+    await Volunteer.sync();
+    await Task.sync();
+
+    // ✅ Синхронизация таблицы сессий (ВАЖНО!)
+    await sessionStore.sync();
+    console.log('✓ Таблица сессий создана');
+
     await createAdminUser();
-    
+
     app.listen(PORT, () => {
       console.log(`✓ Сервер запущен на порту ${PORT}`);
-      console.log(`✓ Режим: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
-    console.error('✗ Ошибка при запуске сервера:', error.message);
-    console.error(error.stack); // Добавим полный стек ошибки
+    console.error('✗ Ошибка запуска:', error);
     process.exit(1);
   }
 }
