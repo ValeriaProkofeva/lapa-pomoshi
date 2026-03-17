@@ -26,6 +26,23 @@ export const securityHeaders = helmet({
   crossOriginEmbedderPolicy: false
 });
 
+export const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 минут
+  max: 100,
+  message: 'Слишком много запросов с вашего IP, попробуйте позже',
+  standardHeaders: true,
+  legacyHeaders: false,
+  // ✅ Отключаем конкретную проверку
+  validate: {
+    trustProxy: false, // Отключаем проверку trust proxy
+    xForwardedForHeader: false, // Отключаем проверку X-Forwarded-For
+    ip: false // Отключаем проверку IP
+  },
+  // ✅ Явно указываем keyGenerator
+  keyGenerator: (req) => {
+    return req.ip || req.connection.remoteAddress || 'unknown';
+  }
+});
 
 export const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, 

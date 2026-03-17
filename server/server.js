@@ -16,11 +16,11 @@ import Advertisement from './models/Advertisement.js';
 import Profile from './models/Profile.js';
 import Volunteer from './models/Volunteer.js';
 import Task from './models/Task.js';
-import { securityHeaders, sessionConfig, sessionStore } from './middleware/security.js';
+import { securityHeaders, limiter, sessionConfig, sessionStore } from './middleware/security.js';
 
 
 const app = express();
-app.set('trust proxy', true);
+app.set('trust proxy', 1); 
 const PORT = process.env.PORT || 5000;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -140,13 +140,6 @@ async function startServer() {
   console.error('❌ Ошибка создания таблицы сессий:', error.message);
 }
 
-    // ✅ ВАЖНО: синхронизируем таблицу сессий
-    if (sessionStore && typeof sessionStore.sync === 'function') {
-      await sessionStore.sync();
-      console.log('✓ Таблица сессий синхронизирована');
-    } else {
-      console.log('⚠️ sessionStore не имеет метода sync, пропускаем');
-    }
     
     await createAdminUser();
     
