@@ -1,6 +1,6 @@
 import express from 'express';
 import { register, login, logout, checkAuth } from '../controllers/authController.js';
-import { authLimiter } from '../middleware/security.js';
+
 
 const router = express.Router();
 
