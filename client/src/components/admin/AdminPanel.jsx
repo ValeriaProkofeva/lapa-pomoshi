@@ -1304,7 +1304,7 @@ const apiCall = async (url, options = {}) => {
           e.preventDefault();
           const formData = new FormData(e.target);
           handleUpdate(
-            `http://localhost:5000/api/admin/users/${selectedItem.id}`,
+            `${API_BASE_URL}/api/admin/users/${selectedItem.id}`,
             {
               name: formData.get('name'),
               email: formData.get('email'),
@@ -1359,7 +1359,7 @@ const apiCall = async (url, options = {}) => {
           e.preventDefault();
           const formData = new FormData(e.target);
           handleUpdate(
-            `http://localhost:5000/api/admin/advertisements/${selectedItem.id}`,
+            `${API_BASE_URL}/api/admin/advertisements/${selectedItem.id}`,
             {
               animalType: formData.get('animalType'),
               status: formData.get('status'),
@@ -1459,7 +1459,7 @@ const apiCall = async (url, options = {}) => {
               key={status}
               className={styles.editButton}
               onClick={() => handleUpdate(
-                `http://localhost:5000/api/admin/volunteers/${selectedItem.id}/status`,
+                `${API_BASE_URL}/api/admin/volunteers/${selectedItem.id}/status`,
                 { status },
                 () => {
                   loadVolunteers();
@@ -1593,14 +1593,14 @@ const apiCall = async (url, options = {}) => {
                 case 'users':
                   console.log('Удаление пользователя с ID:', selectedItem.id);
                   await handleDelete(
-                    `http://localhost:5000/api/admin/users/${selectedItem.id}`,
+                    `${API_BASE_URL}/api/admin/users/${selectedItem.id}`,
                     loadUsers
                   );
                   break;
                 case 'volunteers':
                   console.log('Удаление волонтера с ID:', selectedItem.id);
                   await handleDelete(
-                    `http://localhost:5000/api/admin/volunteers/${selectedItem.id}`,
+                    `${API_BASE_URL}/api/admin/volunteers/${selectedItem.id}`,
                     () => {
                       loadVolunteers();
                       loadVolunteerStats();
@@ -1610,7 +1610,7 @@ const apiCall = async (url, options = {}) => {
                 case 'advertisements':
                   console.log('Удаление объявления с ID:', selectedItem.id);
                   await handleDelete(
-                    `http://localhost:5000/api/admin/advertisements/${selectedItem.id}`,
+                    `${API_BASE_URL}/api/admin/advertisements/${selectedItem.id}`,
                     loadAdvertisements
                   );
                   break;

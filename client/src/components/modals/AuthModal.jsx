@@ -32,7 +32,7 @@ function AuthModal({ isOpen, onClose, initialMode = 'login', onAuth }) {
           <div 
             className={styles.imageSection}
             style={{ 
-              backgroundImage: `url(${mode === 'login' ? '/auth.png' : '/reg.png'})` 
+              backgroundImage: `url(${getImageUrl(mode === 'login' ? 'auth.png' : 'reg.png')})`, 
             }}
           />
         </div>
