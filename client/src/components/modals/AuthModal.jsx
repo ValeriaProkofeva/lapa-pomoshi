@@ -19,6 +19,10 @@ function AuthModal({ isOpen, onClose, initialMode = 'login', onAuth }) {
     }
   };
 
+    const getImageUrl = (imageName) => {
+    return `/${imageName}`;
+  };
+
   return ReactDOM.createPortal(
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
