@@ -1,30 +1,44 @@
 import { Sequelize } from 'sequelize';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let dbPath;
+let sequelize;
 
 if (process.env.NODE_ENV === 'production') {
-  const dataDir = path.join(__dirname, '../../data');
+  const databaseUrl = process.env.DATABASE_URL;
   
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+  if (!databaseUrl) {
+    throw new Error(' DATABASE_URL не задана в переменных окружения!');
   }
   
-  dbPath = path.join(dataDir, 'database.sqlite');
-  console.log('📁 Продакшен БД путь:', dbPath);
+  console.log(' Подключение к PostgreSQL на Render');
+  
+  sequelize = new Sequelize(databaseUrl, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false 
+      }
+    },
+    logging: false, 
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
+  });
 } else {
-  dbPath = path.join(__dirname, '../../database.sqlite');
+  console.log(' Локальная разработка: SQLite');
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: path.join(__dirname, '../../database.sqlite'),
+    logging: console.log
+  });
 }
-
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: dbPath,
-  logging: process.env.NODE_ENV !== 'production'
-});
 
 export default sequelize;

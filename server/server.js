@@ -90,6 +90,10 @@ async function createAdminUser() {
   }
 }
 
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // ✅ Запуск сервера
 async function startServer() {
   try {
